@@ -1,0 +1,41 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: faros
+  labels:
+    backend: faros
+spec:
+  selector:
+    matchLabels:
+      backend: faros
+  template:
+    metadata:
+      labels:
+        backend: faros
+    spec:
+      containers:
+      - image: lnquy/faros:@IMAGE_VERSION
+        imagePullPolicy: IfNotPresent
+        name: faros
+        ports:
+        - name: http
+          protocol: TCP
+          containerPort: @CONTAINER_PORT
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    service: faros
+  name: faros
+spec:
+  ports:
+  - name: http
+    protocol: TCP
+    port: @CONTAINER_PORT
+    targetPort: @CONTAINER_PORT
+    nodePort: @NODE_PORT
+  selector:
+    backend: faros
+  type: NodePort
